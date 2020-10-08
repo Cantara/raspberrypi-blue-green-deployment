@@ -9,7 +9,7 @@ public class MasterStatus {
     public MasterStatus() {
         this.status = Status.INITIAL;
     }
-    public synchronized void setStatus(Status status) {
+    public synchronized static void setStatus(Status status) {
         getInstance().status = status;
     }
     public synchronized static Status getStatus() {

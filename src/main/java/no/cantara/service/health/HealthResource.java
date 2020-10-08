@@ -1,5 +1,6 @@
 package no.cantara.service.health;
 
+import no.cantara.status.HealthValidator;
 import no.cantara.status.MasterStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +24,13 @@ import java.util.Properties;
  */
 @Path(HealthResource.HEALTH_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-public class HealthResource {
+public class HealthResource extends HealthValidator {
     public static final String HEALTH_PATH = "/health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
+
+    public HealthResource() {
+        super.startWarmup();
+    }
 
     @GET
     public Response healthCheck() {
