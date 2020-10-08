@@ -1,0 +1,30 @@
+@startuml
+participant "blue-green-deployment.sh" as bg
+participant "service-V1.0.0" as v1
+participant "service-v1.1.0" as v11
+participant "readFromQueue" as rq
+participant "outputToApi" as ea
+participant "nexus" as n #orange
+activate bg
+bg -> n: wget
+n --> bg: service-V1.1.0.jar
+bg -> bg: find process id(s)\n and url's for primary and fallback nodes
+bg -> bg: kill fallback
+bg -> v11: "java -jar -DprimaryUrl=<from above>
+deactivate bg
+activate v11
+v11 -> v11: warmup, MasterStatus=Candidate
+v11 -> v11: warmup is verified ok
+v11 -> v1: "Request Primary"
+v1 -> rq: Fetch from queue is running, \ncan not interrupt.
+v1 --> v11: http 102, Processing
+v11 -> v11: wait and retry
+v11 -> v1: "Request Primary"
+v1 --> v11: http 202, Accepted
+v1 -> v1: Close imput, MasterStatus=Draining
+v11 -> v11: MasterStatus=Primary
+deactivate v11
+v11 -> rq: Fetch from queue
+v11 -> ea: Stream tag'ed Observations
+
+@enduml
