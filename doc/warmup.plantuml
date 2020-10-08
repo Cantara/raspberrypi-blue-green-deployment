@@ -1,0 +1,35 @@
+@startuml
+participant "main" as main
+participant "config" as conf
+participant "health" as he
+participant "healthValidator" as val
+participant "masterStatus" as state
+participant "transformService" as ts
+participant "readFromQueue" as rq
+participant "outputToApi" as oa
+
+main -> conf: "get properties"
+conf --> main: properties
+main -> state: state=warmup
+main -> rq: create from properties
+main -> oa: create from properties
+main -> val: startWarmUp
+activate val #DarkSalmon
+val -> rq: "get messages from predefined\nsubset"
+val -> val: validate messages
+val -> oa: validate output message
+val -> state: warmupPassed(true)
+activate state
+state -> state: doEnable("outputToApi")
+
+deactivate state
+val -> state: state=live
+val -> val: health=ok
+deactivate val
+== Live ==
+ts -> rq: read messages
+ts -> ts: transform
+ts -> state: isEnabled("outputToApi")
+state --> ts: true
+ts -> oa: transformed messages
+@enduml

@@ -3,3 +3,6 @@ Enable continous deployment of java services on a cheep hw.
 
 ## What to do
 ![Blue/Green deployment](./doc/blue-green-sequence.png)
+
+## Warmup
+![Warmup](./doc/warmup.png)
