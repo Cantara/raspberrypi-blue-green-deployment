@@ -30,7 +30,7 @@ public class FeatureStatus {
         updateStatus(feature, null);
     }
 
-    protected static void updateStatus(String feature, Boolean status) {
+    protected synchronized static void updateStatus(String feature, Boolean status) {
         if (feature != null && !feature.isEmpty()) {
             if (status != null) {
                 getInstance().featureStatus.put(feature, status);
@@ -41,7 +41,10 @@ public class FeatureStatus {
     }
 
 
-    public static FeatureStatus getInstance() {
+    protected static FeatureStatus getInstance() {
+        if (instance == null ) {
+            instance = new FeatureStatus();
+        }
         return instance;
     }
 }

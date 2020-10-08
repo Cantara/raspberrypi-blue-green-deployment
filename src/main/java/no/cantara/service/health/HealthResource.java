@@ -1,5 +1,6 @@
 package no.cantara.service.health;
 
+import no.cantara.status.MasterStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +30,25 @@ public class HealthResource {
     @GET
     public Response healthCheck() {
         log.trace("healthCheck");
-        String response = String.format("{ \"microservice-health\": \"OK\", \"version\": \"%s\", \"now\":\"%s\", \"running since\": \"%s\"}",
-                getVersion(), Instant.now(), getRunningSince());
+        String response = String.format("{ \"microservice-health\": \"%s\", \"masterStatus\": \"%s\", \"version\": \"%s\", \"now\":\"%s\", \"running since\": \"%s\"}",
+                getHealth(), getMasterStatus(), getVersion(), Instant.now(), getRunningSince());
         return Response.ok(response).build();
     }
+
+    private String getHealth() {
+        MasterStatus.Status status = MasterStatus.getStatus();
+        if (status == MasterStatus.Status.FAILED) {
+            return "unhealthy";
+        } else {
+            return "OK";
+        }
+    }
+
+
+    private String getMasterStatus() {
+        return MasterStatus.getStatus().name();
+    }
+
 
     private String getRunningSince() {
         long uptimeInMillis = ManagementFactory.getRuntimeMXBean().getUptime();

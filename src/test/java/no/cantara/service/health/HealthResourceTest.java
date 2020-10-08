@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * @author <a href="mailto:asbjornwillersrud@gmail.com">Asbjørn Willersrud</a> 30/03/2016.
@@ -34,6 +35,7 @@ public class HealthResourceTest {
                 .log().everything()
                 .expect()
                 .statusCode(HttpURLConnection.HTTP_OK)
+                .body(containsString("\"masterStatus\": \"INITIAL\""))
                 .log().everything()
                 .when()
                 .get(HealthResource.HEALTH_PATH);
