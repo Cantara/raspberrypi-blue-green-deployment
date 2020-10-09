@@ -1,9 +1,10 @@
 package no.cantara.service.health;
 
-import no.cantara.status.HealthValidator;
+import no.cantara.service.masterstatus.BlueGreenService;
 import no.cantara.status.MasterStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,12 +25,16 @@ import java.util.Properties;
  */
 @Path(HealthResource.HEALTH_PATH)
 @Produces(MediaType.APPLICATION_JSON)
-public class HealthResource extends HealthValidator {
+public class HealthResource {
     public static final String HEALTH_PATH = "/health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
-    public HealthResource() {
-        super.startWarmup();
+    private final BlueGreenService blueGreenService;
+
+    @Autowired
+    public HealthResource(BlueGreenService blueGreenService) {
+        this.blueGreenService = blueGreenService;
+        this.blueGreenService.startWarmup();
     }
 
     @GET
