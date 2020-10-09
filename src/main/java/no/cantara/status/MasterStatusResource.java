@@ -42,7 +42,7 @@ public class MasterStatusResource {
             default:
                 response = Response.status(412, "This node is not Primary. Current MasterStatus is: " + status.name()).build();
         }
-        log.info("Request Primary response: ", response);
+        log.info("Request Primary response: {}", response);
         return response;
     }
 
