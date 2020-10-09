@@ -4,6 +4,7 @@ import no.cantara.service.health.HealthResource;
 import no.cantara.service.oauth2ping.PingResource;
 import no.cantara.simulator.oauth2stubbedserver.OAuth2StubbedServerResource;
 import no.cantara.simulator.oauth2stubbedserver.OAuth2StubbedTokenVerifyResource;
+import no.cantara.status.MasterStatusResource;
 import no.cantara.util.Configuration;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -158,7 +159,14 @@ public class Main {
         healthEndpointConstraintMapping.setPathSpec(HealthResource.HEALTH_PATH);
         securityHandler.addConstraintMapping(healthEndpointConstraintMapping);
 
+        // Allow healthresource to be accessed without authentication
+        ConstraintMapping masterstatusEndpointConstraintMapping = new ConstraintMapping();
+        masterstatusEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
+        masterstatusEndpointConstraintMapping.setPathSpec("/" + MasterStatusResource.DEFAULT_PATH + "/*");
+        securityHandler.addConstraintMapping(masterstatusEndpointConstraintMapping);
+
         // Allow OAuth2StubbedServerResource to be accessed without authentication
+        //FIXME should be protected
         ConstraintMapping oauthserverEndpointConstraintMapping = new ConstraintMapping();
         oauthserverEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
         oauthserverEndpointConstraintMapping.setPathSpec(OAuth2StubbedServerResource.OAUTH2TOKENSERVER_PATH);
