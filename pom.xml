@@ -29,15 +29,15 @@
     </parent>
 
     <scm>
-        <developerConnection>scm:git:ssh://git@github.com/cantara/microservice-baseline.git</developerConnection>
-        <connection>scm:git:https://github.com/cantara/microservice-baseline.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/cantara/raspberrypi-blue-green-deployment.git</developerConnection>
+        <connection>scm:git:https://github.com/cantara/raspberrypi-blue-green-deployment.git</connection>
         <url>https://wiki.cantara.no/display/architecture/Typical+micro+service+technology+stack+(java)</url>
       <tag>HEAD</tag>
   </scm>
 
 
     <properties>
-        <service.name>microservice-baseline</service.name>
+        <service.name>raspberrypi-blue-green-deployment</service.name>
         <jackson.version>2.11.2</jackson.version>
         <jersey.version>2.31</jersey.version>
         <jetty.version>9.4.31.v20200723</jetty.version>
