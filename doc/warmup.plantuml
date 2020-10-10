@@ -4,13 +4,14 @@ participant "config" as conf
 participant "health" as he
 participant "healthValidator" as val
 participant "masterStatus" as state
+participant "featureStatus" as feat
 participant "transformService" as ts
 participant "readFromQueue" as rq
 participant "outputToApi" as oa
 
 main -> conf: "get properties"
 conf --> main: properties
-main -> state: state=warmup
+main -> state: MasterStatus=WARMUP
 main -> rq: create from properties
 main -> oa: create from properties
 main -> val: startWarmUp
@@ -18,18 +19,23 @@ activate val #DarkSalmon
 val -> rq: "get messages from predefined\nsubset"
 val -> val: validate messages
 val -> oa: validate output message
-val -> state: warmupPassed(true)
-activate state
-state -> state: doEnable("outputToApi")
+val -> val: warmupPassed(true)
+val -> feat: doEnable("outputToApi")
+val -> feat: doEnable("readFromQueue")
+val -> feat: doEnable("importAndTransform")
 
-deactivate state
-val -> state: state=live
-val -> val: health=ok
+val -> state: MasterStatus=ACTIVE
+val -> val: health=OK
 deactivate val
-== Live ==
+== Active ==
+ts -> ts: import, transform, send
+activate ts
+ts -> feat: isEnabled("readFromQueue")
+feat -> ts: true
 ts -> rq: read messages
-ts -> ts: transform
-ts -> state: isEnabled("outputToApi")
-state --> ts: true
+ts -> ts: transform messages
+ts -> feat: isEnabled("outputToApi")
+feat -> ts: true
 ts -> oa: transformed messages
+deactivate ts
 @enduml
