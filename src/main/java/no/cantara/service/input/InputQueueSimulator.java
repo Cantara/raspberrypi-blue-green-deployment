@@ -1,6 +1,7 @@
 package no.cantara.service.input;
 
 import no.cantara.commands.config.ConstantValue;
+import no.cantara.status.IntegrationStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -9,6 +10,18 @@ import java.util.List;
 
 @Service
 public class InputQueueSimulator implements InputQueue {
+    private boolean integrationOk = false;
+
+    @Override
+    public boolean isIntegrationOk() {
+        return integrationOk;
+    }
+
+    @Override
+    public IntegrationStatus getIntegrationStatus() {
+        return new IntegrationStatus(integrationOk);
+    }
+
     @Override
     public String doLogin(String username, String password) {
         return "{\"accessToken\": \"" + ConstantValue.ATOKEN + "\"," +
