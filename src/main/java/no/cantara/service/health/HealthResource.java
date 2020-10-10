@@ -26,7 +26,7 @@ import java.util.Properties;
 @Path(HealthResource.HEALTH_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 public class HealthResource {
-    public static final String HEALTH_PATH = "/health";
+    public static final String HEALTH_PATH = "health";
     private static final Logger log = LoggerFactory.getLogger(HealthResource.class);
 
     private final BlueGreenService blueGreenService;

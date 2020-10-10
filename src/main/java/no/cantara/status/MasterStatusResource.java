@@ -16,6 +16,7 @@ public class MasterStatusResource {
     private static final Logger log = getLogger(MasterStatusResource.class);
 
     public static final String DEFAULT_PATH = "masterstatus";
+    public static final String REQUEST_PRIMARY_PATH = "requestPrimary";
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -27,13 +28,13 @@ public class MasterStatusResource {
     }
 
     @PUT
-    @Path("requestPrimary")
+    @Path(REQUEST_PRIMARY_PATH)
     public Response requestPrimary() {
         Response response = null;
         MasterStatus.Status status = MasterStatus.getStatus();
         switch (status) {
             case PRIMARY:
-                if (readyToLeavePrimary()) {
+                if (leavePrimary()) {
                     response = Response.status(202).build();
                 } else {
                     response = Response.status(412, "This node is not Primary. Current MasterStatus is: " + status.name()).build();
@@ -46,7 +47,7 @@ public class MasterStatusResource {
         return response;
     }
 
-    public boolean readyToLeavePrimary() {
+    public boolean leavePrimary() {
         return false;
     }
 

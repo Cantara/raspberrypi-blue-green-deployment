@@ -1,6 +1,7 @@
 package no.cantara.service;
 
 import no.cantara.service.health.HealthResource;
+import no.cantara.service.masterstatus.BlueGreenMasterStatusResource;
 import no.cantara.service.oauth2ping.PingResource;
 import no.cantara.simulator.oauth2stubbedserver.OAuth2StubbedServerResource;
 import no.cantara.simulator.oauth2stubbedserver.OAuth2StubbedTokenVerifyResource;
@@ -113,7 +114,14 @@ public class Main {
             // "System. exit(2);"
         }
         webappPort = connector.getLocalPort();
-        log.info("microservice-baseline started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
+        log.info("bluegreenService started on http://localhost:{}{}", webappPort, CONTEXT_PATH);
+        log.info("  health on http://localhost:{}{}/{}", webappPort, CONTEXT_PATH, HealthResource.HEALTH_PATH);
+        log.info("  bluegreen status on http://localhost:{}{}/{}", webappPort, CONTEXT_PATH, BlueGreenMasterStatusResource.BLUEGREEN_STATUS_PATH);
+        log.info("  request primary by PUT to http://localhost:{}{}/{}/{}",
+                webappPort,
+                CONTEXT_PATH,
+                BlueGreenMasterStatusResource.BLUEGREEN_STATUS_PATH,
+                MasterStatusResource.REQUEST_PRIMARY_PATH);
         try {
             server.join();
         } catch (InterruptedException e) {
@@ -156,17 +164,23 @@ public class Main {
         // Allow healthresource to be accessed without authentication
         ConstraintMapping healthEndpointConstraintMapping = new ConstraintMapping();
         healthEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
-        healthEndpointConstraintMapping.setPathSpec(HealthResource.HEALTH_PATH);
+        healthEndpointConstraintMapping.setPathSpec("/" + HealthResource.HEALTH_PATH);
         securityHandler.addConstraintMapping(healthEndpointConstraintMapping);
 
         // Allow healthresource to be accessed without authentication
+        //FIXME should be protected
         ConstraintMapping masterstatusEndpointConstraintMapping = new ConstraintMapping();
         masterstatusEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
         masterstatusEndpointConstraintMapping.setPathSpec("/" + MasterStatusResource.DEFAULT_PATH + "/*");
         securityHandler.addConstraintMapping(masterstatusEndpointConstraintMapping);
 
-        // Allow OAuth2StubbedServerResource to be accessed without authentication
         //FIXME should be protected
+        ConstraintMapping bluegreenStatusEndpointConstraintMapping = new ConstraintMapping();
+        bluegreenStatusEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
+        bluegreenStatusEndpointConstraintMapping.setPathSpec("/" + BlueGreenMasterStatusResource.BLUEGREEN_STATUS_PATH + "/*");
+        securityHandler.addConstraintMapping(bluegreenStatusEndpointConstraintMapping);
+
+        // Allow OAuth2StubbedServerResource to be accessed without authentication
         ConstraintMapping oauthserverEndpointConstraintMapping = new ConstraintMapping();
         oauthserverEndpointConstraintMapping.setConstraint(new Constraint(Constraint.NONE, Constraint.ANY_ROLE));
         oauthserverEndpointConstraintMapping.setPathSpec(OAuth2StubbedServerResource.OAUTH2TOKENSERVER_PATH);
