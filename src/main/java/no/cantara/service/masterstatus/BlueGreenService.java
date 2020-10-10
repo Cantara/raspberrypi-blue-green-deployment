@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -35,7 +36,7 @@ public class BlueGreenService extends HealthValidator {
     public void startWarmup() {
         super.startWarmup();
         boolean inputIsOk = verifyIntegrationToInputQueue();
-        boolean outputIsOk = verifyIntegrationToOutuptApi();
+        boolean outputIsOk = verifyIntegrationToOutputApi();
 
         log.info("Warmup status. Integration status: \n" +
                 "  input: {}\n" +
@@ -54,8 +55,24 @@ public class BlueGreenService extends HealthValidator {
         return verified;
     }
 
-    boolean verifyIntegrationToOutuptApi() {
-        return false;
+    boolean verifyIntegrationToOutputApi() {
+        boolean verified = false;
+        String token = outputToApi.doLogin("user", "password");
+        if (token != null && token.contains("accessToken")) {
+            List<String> sampleMessages = buildSampleOutputMessages();
+            boolean samplesSentOk = outputToApi.sendSampleMessages("anything", sampleMessages);
+            if (samplesSentOk) {
+                verified = true;
+            }
+        }
+        return verified;
+    }
+
+    private List<String> buildSampleOutputMessages() {
+        List<String> messages = new ArrayList<>();
+        messages.add("Sending a message to you 1");
+        messages.add("Sending a message to you 2");
+        return messages;
     }
 
     private String mapBoolean(boolean value) {
