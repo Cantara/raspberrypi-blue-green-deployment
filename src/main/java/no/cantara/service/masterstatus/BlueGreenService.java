@@ -4,6 +4,7 @@ import no.cantara.service.input.InputQueue;
 import no.cantara.service.output.OutputToApiSimulator;
 import no.cantara.service.transform.TransformService;
 import no.cantara.status.HealthValidator;
+import no.cantara.status.MasterStatus;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,11 @@ public class BlueGreenService extends HealthValidator {
         super.startWarmup();
         boolean inputIsOk = verifyIntegrationToInputQueue();
         boolean outputIsOk = verifyIntegrationToOutputApi();
+        if (inputIsOk && outputIsOk) {
+            MasterStatus.setStatus(MasterStatus.Status.ACTIVE);
+            transformService.writeToApi(true);
+            transformService.readFromQueue(true);
+        }
 
         log.info("Warmup status. Integration status: \n" +
                 "  input: {}\n" +
