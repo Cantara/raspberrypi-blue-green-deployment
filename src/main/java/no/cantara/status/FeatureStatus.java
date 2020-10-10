@@ -19,7 +19,7 @@ public class FeatureStatus {
     }
 
     public static void enable(String feature) {
-        updateStatus(feature, false);
+        updateStatus(feature, true);
     }
 
     public static void disable(String feature) {

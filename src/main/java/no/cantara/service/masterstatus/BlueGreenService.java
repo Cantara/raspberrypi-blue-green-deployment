@@ -3,6 +3,7 @@ package no.cantara.service.masterstatus;
 import no.cantara.service.input.InputQueue;
 import no.cantara.service.output.OutputToApiSimulator;
 import no.cantara.service.transform.TransformService;
+import no.cantara.status.FeatureStatus;
 import no.cantara.status.HealthValidator;
 import no.cantara.status.MasterStatus;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.cantara.service.transform.TransformService.*;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -40,8 +42,9 @@ public class BlueGreenService extends HealthValidator {
         boolean outputIsOk = verifyIntegrationToOutputApi();
         if (inputIsOk && outputIsOk) {
             MasterStatus.setStatus(MasterStatus.Status.ACTIVE);
-            transformService.writeToApi(true);
-            transformService.readFromQueue(true);
+            FeatureStatus.enable(WRITE_TO_API);
+            FeatureStatus.enable(READ_FROM_QUEUE);
+            FeatureStatus.enable(IMPORT_AND_TRANSFORM);
             transformService.startImport();
         }
 
