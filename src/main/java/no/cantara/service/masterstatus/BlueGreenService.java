@@ -42,6 +42,7 @@ public class BlueGreenService extends HealthValidator {
             MasterStatus.setStatus(MasterStatus.Status.ACTIVE);
             transformService.writeToApi(true);
             transformService.readFromQueue(true);
+            transformService.startImport();
         }
 
         log.info("Warmup status. Integration status: \n" +

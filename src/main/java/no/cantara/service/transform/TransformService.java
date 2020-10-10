@@ -27,17 +27,18 @@ public class TransformService {
 
     public void startImport() {
         doTransform = true;
-        if (importThread == null) {
+        if (importThread == null || importThread.getState() == Thread.State.TERMINATED) {
             importThread = new Thread(() -> {
                 while(doTransform) {
                     try {
                         importAndTransform();
-                        Thread.sleep(100);
+                        Thread.sleep(2000);
                     } catch(Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
+            importThread.setName("ImportThread");
             importThread.start();
         }
     }
