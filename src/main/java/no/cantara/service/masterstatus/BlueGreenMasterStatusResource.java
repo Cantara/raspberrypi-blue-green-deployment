@@ -21,7 +21,7 @@ public class BlueGreenMasterStatusResource extends MasterStatusResource {
 
     @Override
     public boolean leavePrimary() {
-        if (blueGreenService.canStopTransform()) {
+        if (blueGreenService.mayTransformationBeStoppedNow()) {
             return super.leavePrimary();
         } else {
             return false;
