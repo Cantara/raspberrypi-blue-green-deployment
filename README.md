@@ -24,11 +24,8 @@ Result:
 * 102 You need to wait
 * 412 
 
-## Warmup 
+## Warmup
 ![Warmup](./doc/warmup.png)
-
-### Current warmup
-![Warmup](./doc/current-warmup.png)
 
 ## Development
 ```
