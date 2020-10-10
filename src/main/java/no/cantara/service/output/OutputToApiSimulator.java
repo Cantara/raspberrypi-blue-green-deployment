@@ -2,15 +2,23 @@ package no.cantara.service.output;
 
 import no.cantara.commands.config.ConstantValue;
 import no.cantara.status.IntegrationStatus;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class OutputToApiSimulator implements OutputToApi {
+    private static final Logger log = getLogger(OutputToApiSimulator.class);
 
     private boolean integrationOk = false;
+    private long messageCount = 0;
+    private String lastMessageReceived = null;
 
     @Override
     public boolean isIntegrationOk() {
@@ -19,7 +27,9 @@ public class OutputToApiSimulator implements OutputToApi {
 
     @Override
     public IntegrationStatus getIntegrationStatus() {
-        return new IntegrationStatus("OutputToApiSimulator", integrationOk);
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("messageCount", messageCount);
+        return new IntegrationStatus("OutputToApiSimulator", integrationOk, metadata);
     }
 
     @Override
@@ -41,6 +51,21 @@ public class OutputToApiSimulator implements OutputToApi {
 
     @Override
     public Long sendMessages(String accessToken, List<String> messages) {
+        if (accessToken != null && messages != null && messages.size() > 0) {
+            log.trace("Sent messages: {}", messages);
+            for (String message : messages) {
+                this.lastMessageReceived = message;
+                this.messageCount++;
+            }
+        }
         return null;
+    }
+
+    public long getMessageCount() {
+        return messageCount;
+    }
+
+    public String getLastMessageReceived() {
+        return lastMessageReceived;
     }
 }
