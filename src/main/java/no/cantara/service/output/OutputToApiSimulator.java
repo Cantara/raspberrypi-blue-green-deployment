@@ -19,7 +19,7 @@ public class OutputToApiSimulator implements OutputToApi {
 
     @Override
     public IntegrationStatus getIntegrationStatus() {
-        return new IntegrationStatus(integrationOk);
+        return new IntegrationStatus("OutputToApiSimulator", integrationOk);
     }
 
     @Override

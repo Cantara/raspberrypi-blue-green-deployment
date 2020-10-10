@@ -4,15 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IntegrationStatus {
-    boolean integrationOk;
-    final Map<String,Object> metadata;
+    private final String name;
+    private boolean integrationOk;
+    private final Map<String,Object> metadata;
 
-    public IntegrationStatus(boolean integrationOk) {
-        this.integrationOk = integrationOk;
-        metadata = new HashMap();
+    public IntegrationStatus(String name, boolean integrationOk) {
+        this(name, integrationOk,new HashMap<>());
     }
 
-    public IntegrationStatus(boolean integrationOk, Map<String, Object> metadata) {
+    public IntegrationStatus(String name, boolean integrationOk, Map<String, Object> metadata) {
+        this.name = name;
         this.integrationOk = integrationOk;
         if (metadata != null) {
             this.metadata = metadata;

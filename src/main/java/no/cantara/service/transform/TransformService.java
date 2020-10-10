@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -60,12 +63,24 @@ public class TransformService {
     public void importAndTransform() {
         boolean readFromQueue = shouldReadFromQueue();
         if (readFromQueue) {
-            log.trace("Reading from queue");
+            List<String> fetchedMessages = inputQueue.fetchMessages("anytoken");
             boolean writeToApi = shouldWriteToApi();
             if (writeToApi) {
-                log.trace("Write to api");
+                List<String> transformedMessages = transform(fetchedMessages);
+                log.trace("Write to api {}", transformedMessages);
             };
         }
+    }
+
+    private List<String> transform(List<String> fetchedMessages) {
+        List<String> transformedMessages = new ArrayList<>();
+        if (fetchedMessages != null) {
+            for (String fetchedMessage : fetchedMessages) {
+                String newMessage = fetchedMessage.replace("A message to you", "Sending a message to you");
+                transformedMessages.add(newMessage);
+            }
+        }
+        return transformedMessages;
     }
 
     public boolean shouldReadFromQueue() {

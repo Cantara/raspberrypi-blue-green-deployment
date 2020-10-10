@@ -8,4 +8,5 @@ public interface InputQueue extends IntegrationStatusProvider {
 
     String doLogin(String username, String password);
     List<String> fetchSampleMessages(String accessToken, int count);
+    List<String> fetchMessages(String accessToken);
 }
