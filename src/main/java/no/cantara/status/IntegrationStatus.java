@@ -36,4 +36,13 @@ public class IntegrationStatus {
     public Map<String, Object> getMetadata() {
         return metadata;
     }
+
+    @Override
+    public String toString() {
+        return "IntegrationStatus{" +
+                "name='" + name + '\'' +
+                ", integrationOk=" + integrationOk +
+                ", metadata=" + metadata +
+                '}';
+    }
 }

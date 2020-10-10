@@ -67,7 +67,8 @@ public class TransformService {
             boolean writeToApi = shouldWriteToApi();
             if (writeToApi) {
                 List<String> transformedMessages = transform(fetchedMessages);
-                outputToApi.sendMessages("antoken", transformedMessages);
+                Long messagesSent = outputToApi.sendMessages("antoken", transformedMessages);
+                log.trace("Imported {}, exported {} messages.", fetchedMessages.size(), messagesSent);
             };
         }
     }

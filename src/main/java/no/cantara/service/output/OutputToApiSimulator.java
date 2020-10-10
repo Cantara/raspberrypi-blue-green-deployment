@@ -51,14 +51,16 @@ public class OutputToApiSimulator implements OutputToApi {
 
     @Override
     public Long sendMessages(String accessToken, List<String> messages) {
+        Long messagesSent = null;
         if (accessToken != null && messages != null && messages.size() > 0) {
             log.trace("Sent messages: {}", messages);
             for (String message : messages) {
                 this.lastMessageReceived = message;
                 this.messageCount++;
             }
+            messagesSent = Long.valueOf(messages.size());
         }
-        return null;
+        return messagesSent;
     }
 
     public long getMessageCount() {
