@@ -35,7 +35,7 @@ public class HealthResourceTest {
                 .log().everything()
                 .expect()
                 .statusCode(HttpURLConnection.HTTP_OK)
-                .body(containsString("\"masterStatus\": \"WARMUP\""))
+                .body(containsString("\"masterStatus\": \"ACTIVE\""))
                 .log().everything()
                 .when()
                 .get(HealthResource.HEALTH_PATH);

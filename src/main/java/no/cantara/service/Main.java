@@ -59,6 +59,7 @@ public class Main {
         LogManager.getLogManager().getLogger("").setLevel(Level.INFO);
 
         Integer webappPort = Configuration.getInt("service.port");
+        log.warn("***port: {}", webappPort);
 
         try {
 
