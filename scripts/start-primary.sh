@@ -1,3 +1,4 @@
 #!/bin/sh
-SERVICE_PORT=${1:-5050}
-java -Dservice.port=$SERVICE_PORT -jar target/blueGreenService.jar
+NODE_DIR=${1:-green}
+SERVICE_PORT=${2:-5050}
+nohup java -Dservice.port=$SERVICE_PORT -jar $NODE_DIR/blueGreenService.jar &
