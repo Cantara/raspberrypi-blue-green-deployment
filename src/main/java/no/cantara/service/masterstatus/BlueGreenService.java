@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class BlueGreenService extends HealthValidator {
     }
 
     public boolean mayTransformationBeStoppedNow() {
-        return false;
+        return true;
     }
 
     @Override
@@ -44,18 +45,57 @@ public class BlueGreenService extends HealthValidator {
         if (inputIsOk && outputIsOk) {
             if (startAsFallbackNode()) {
                 MasterStatus.setStatus(MasterStatus.Status.FALLBACK);
-            } else {
+            } else if (startAsPrimary()) {
+                MasterStatus.setStatus(MasterStatus.Status.PRIMARY);
+                FeatureStatus.enable(WRITE_TO_API);
+                FeatureStatus.enable(READ_FROM_QUEUE);
+                FeatureStatus.enable(IMPORT_AND_TRANSFORM);
+                transformService.startImport();
+            } else if (startAsActive()){
                 MasterStatus.setStatus(MasterStatus.Status.ACTIVE);
                 FeatureStatus.enable(WRITE_TO_API);
                 FeatureStatus.enable(READ_FROM_QUEUE);
                 FeatureStatus.enable(IMPORT_AND_TRANSFORM);
                 transformService.startImport();
+            } else {
+                MasterStatus.setStatus(MasterStatus.Status.FAILED);
             }
         }
 
         log.info("Warmup status. Integration status: \n" +
                 "  input: {}\n" +
                 "  output: {}", mapBoolean(inputIsOk), mapBoolean(outputIsOk));
+    }
+
+    boolean startAsActive() {
+        boolean startAsActive = false;
+        String primaryUrl = Configuration.getString("primaryUrl", null);
+        if (primaryUrl == null) {
+            startAsActive = true;
+        } else {
+            log.warn("PrimaryURL is provided. This node may not be started in Active Status.");
+        }
+        return startAsActive;
+    }
+
+    boolean startAsPrimary() {
+        boolean startAsPrimary = false;
+        String primaryUrl = Configuration.getString("primaryUrl", null);
+        if (primaryUrl != null && !primaryUrl.isEmpty()) {
+            startAsPrimary = primaryExistAndWillDegradToFallback(primaryUrl);
+        }
+        return startAsPrimary;
+    }
+
+     boolean primaryExistAndWillDegradToFallback(String primaryUrl) {
+        boolean canResumePrimary = false;
+        try {
+            URI primaryUri = URI.create(primaryUrl);
+            canResumePrimary = PrimaryClient.requestPrimary(primaryUri);
+        } catch (Exception e) {
+            log.warn("Failed to resume primary. Reason: {}", e);
+        }
+        return canResumePrimary;
     }
 
     boolean verifyIntegrationToInputQueue() {

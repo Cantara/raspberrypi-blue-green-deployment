@@ -33,15 +33,22 @@ public class MasterStatusResource {
         Response response = null;
         MasterStatus.Status status = MasterStatus.getStatus();
         switch (status) {
-            case PRIMARY:
+            case  ACTIVE:
                 if (leavePrimary()) {
                     response = Response.status(202).build();
                 } else {
-                    response = Response.status(412, "This node is not Primary. Current MasterStatus is: " + status.name()).build();
+                    response = Response.status(102, "This node is actively importing. Pleas wait and retry").build();
+                }
+                break;
+            case  PRIMARY:
+                if (leavePrimary()) {
+                    response = Response.status(202).build();
+                } else {
+                    response = Response.status(102, "This node is actively importing. Pleas wait and retry").build();
                 }
                 break;
             default:
-                response = Response.status(412, "This node is not Primary. Current MasterStatus is: " + status.name()).build();
+                response = Response.status(412, "This node is not Primary nor Active. Current MasterStatus is: " + status.name()).build();
         }
         log.info("Request Primary response: {}", response);
         return response;
