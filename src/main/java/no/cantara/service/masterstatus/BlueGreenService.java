@@ -6,6 +6,7 @@ import no.cantara.service.transform.TransformService;
 import no.cantara.status.FeatureStatus;
 import no.cantara.status.HealthValidator;
 import no.cantara.status.MasterStatus;
+import no.cantara.util.Configuration;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,11 +42,15 @@ public class BlueGreenService extends HealthValidator {
         boolean inputIsOk = verifyIntegrationToInputQueue();
         boolean outputIsOk = verifyIntegrationToOutputApi();
         if (inputIsOk && outputIsOk) {
-            MasterStatus.setStatus(MasterStatus.Status.ACTIVE);
-            FeatureStatus.enable(WRITE_TO_API);
-            FeatureStatus.enable(READ_FROM_QUEUE);
-            FeatureStatus.enable(IMPORT_AND_TRANSFORM);
-            transformService.startImport();
+            if (startAsFallbackNode()) {
+                MasterStatus.setStatus(MasterStatus.Status.FALLBACK);
+            } else {
+                MasterStatus.setStatus(MasterStatus.Status.ACTIVE);
+                FeatureStatus.enable(WRITE_TO_API);
+                FeatureStatus.enable(READ_FROM_QUEUE);
+                FeatureStatus.enable(IMPORT_AND_TRANSFORM);
+                transformService.startImport();
+            }
         }
 
         log.info("Warmup status. Integration status: \n" +
@@ -76,6 +81,11 @@ public class BlueGreenService extends HealthValidator {
             }
         }
         return verified;
+    }
+
+    boolean startAsFallbackNode() {
+        boolean startInFallbackStatus = Configuration.getBoolean("masterStatus");
+        return startInFallbackStatus;
     }
 
     private List<String> buildSampleOutputMessages() {
