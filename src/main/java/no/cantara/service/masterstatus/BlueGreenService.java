@@ -25,6 +25,7 @@ public class BlueGreenService extends HealthValidator {
     private final InputQueue inputQueue;
     private final OutputToApiSimulator outputToApi;
     private final TransformService transformService;
+    private boolean warmupStarted = false;
 
     @Autowired
     public BlueGreenService(InputQueue inputQueue, OutputToApiSimulator outputToApi, TransformService transformService) {
@@ -34,37 +35,41 @@ public class BlueGreenService extends HealthValidator {
     }
 
     public boolean mayTransformationBeStoppedNow() {
+        transformService.pauseImport();
         return true;
     }
 
     @Override
     public void startWarmup() {
-        super.startWarmup();
-        boolean inputIsOk = verifyIntegrationToInputQueue();
-        boolean outputIsOk = verifyIntegrationToOutputApi();
-        if (inputIsOk && outputIsOk) {
-            if (startAsFallbackNode()) {
-                MasterStatus.setStatus(MasterStatus.Status.FALLBACK);
-            } else if (startAsPrimary()) {
-                MasterStatus.setStatus(MasterStatus.Status.PRIMARY);
-                FeatureStatus.enable(WRITE_TO_API);
-                FeatureStatus.enable(READ_FROM_QUEUE);
-                FeatureStatus.enable(IMPORT_AND_TRANSFORM);
-                transformService.startImport();
-            } else if (startAsActive()){
-                MasterStatus.setStatus(MasterStatus.Status.ACTIVE);
-                FeatureStatus.enable(WRITE_TO_API);
-                FeatureStatus.enable(READ_FROM_QUEUE);
-                FeatureStatus.enable(IMPORT_AND_TRANSFORM);
-                transformService.startImport();
-            } else {
-                MasterStatus.setStatus(MasterStatus.Status.FAILED);
+        if (!warmupStarted) {
+            warmupStarted = true;
+            super.startWarmup();
+            boolean inputIsOk = verifyIntegrationToInputQueue();
+            boolean outputIsOk = verifyIntegrationToOutputApi();
+            if (inputIsOk && outputIsOk) {
+                if (startAsFallbackNode()) {
+                    MasterStatus.setStatus(MasterStatus.Status.FALLBACK);
+                } else if (startAsPrimary()) {
+                    MasterStatus.setStatus(MasterStatus.Status.PRIMARY);
+                    FeatureStatus.enable(WRITE_TO_API);
+                    FeatureStatus.enable(READ_FROM_QUEUE);
+                    FeatureStatus.enable(IMPORT_AND_TRANSFORM);
+                    transformService.startImport();
+                } else if (startAsActive()) {
+                    MasterStatus.setStatus(MasterStatus.Status.ACTIVE);
+                    FeatureStatus.enable(WRITE_TO_API);
+                    FeatureStatus.enable(READ_FROM_QUEUE);
+                    FeatureStatus.enable(IMPORT_AND_TRANSFORM);
+                    transformService.startImport();
+                } else {
+                    MasterStatus.setStatus(MasterStatus.Status.FAILED);
+                }
             }
-        }
 
-        log.info("Warmup status. Integration status: \n" +
-                "  input: {}\n" +
-                "  output: {}", mapBoolean(inputIsOk), mapBoolean(outputIsOk));
+            log.info("Warmup status. Integration status: \n" +
+                    "  input: {}\n" +
+                    "  output: {}", mapBoolean(inputIsOk), mapBoolean(outputIsOk));
+        }
     }
 
     boolean startAsActive() {

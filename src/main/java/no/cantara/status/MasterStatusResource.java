@@ -55,7 +55,8 @@ public class MasterStatusResource {
     }
 
     public boolean leavePrimary() {
-        return false;
+        MasterStatus.setStatus(MasterStatus.Status.FALLBACK);
+        return true;
     }
 
 }
