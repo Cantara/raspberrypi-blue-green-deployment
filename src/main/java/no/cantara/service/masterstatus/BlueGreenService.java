@@ -84,7 +84,10 @@ public class BlueGreenService extends HealthValidator {
     }
 
     boolean startAsFallbackNode() {
-        boolean startInFallbackStatus = Configuration.getBoolean("masterStatus");
+        boolean startInFallbackStatus =  false;
+        if (Configuration.getString("masterStatus", "").contains("FALLBACK")) {
+            startInFallbackStatus = true;
+        }
         return startInFallbackStatus;
     }
 

@@ -3,8 +3,12 @@ package no.cantara.util;
 import org.constretto.ConstrettoBuilder;
 import org.constretto.ConstrettoConfiguration;
 import org.constretto.model.Resource;
+import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class Configuration {
+    private static final Logger log = getLogger(Configuration.class);
     
     private static final ConstrettoConfiguration configuration = new ConstrettoBuilder()
             .createPropertiesStore()
@@ -17,6 +21,15 @@ public class Configuration {
     
     public static String getString(String key) {
         return configuration.evaluateToString(key);
+    }
+    public static String getString(String key, String defaultValue) {
+        String value = defaultValue;
+        try {
+            value = configuration.evaluateToString(key);
+        } catch (Exception e) { 
+            log.trace("Failed to load configruation for: {}", key,e);
+        }
+        return value;
     }
     
     public static Integer getInt(String key) {
@@ -36,7 +49,7 @@ public class Configuration {
         try {
             value = configuration.evaluateToBoolean(key);
         } catch (Exception e) {
-            //do nothing
+            log.trace("Failed to load configruation for: {}", key,e);
         }
         return value;
     }
