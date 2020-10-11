@@ -1,13 +1,30 @@
-#!/bin/sh
+#!/bin/bash
+
+# Initial setup
+#./start-nodes.sh
 
 # Config
-mkdir -p "blue"
-mkdir -p "green"
-cp target/blueGreenService.jar blue
-cp target/blueGreenService.jar green
-# Start the first node.
-sh ./scripts/start-primary.sh blue 5050 > /dev/null
+fallbackNode=$(./scripts/isFallbackGreenOrBlue.sh)
+echo Fallback: $fallbackNode
+NODE_DIR=none
+NODE_PORT=none
+PRIMARY_PORT=none
 
+if [[ $fallbackNode == 'blue' ]]; then
+  NODE_DIR=blue
+  NODE_PORT=5050
+  PRIMARY_PORT=5051
+elif [[ $fallbackNode == 'green' ]]; then
+  NODE_DIR=green
+  NODE_PORT=5051
+  PRIMARY_PORT=5050
+else
+  echo No fallback node found exiting.
+  exit 1
+fi
+cp target/blueGreenService.jar $NODE_DIR
+# Kill the node
+sh ./scripts/kill-node.sh $NODE_DIR
 #Start a new node which will assume primary role.
-sh ./scripts/start-candidate.sh green 5051 http://localhost:5050/ FALLBACK
+sh ./scripts/start-candidate.sh $NODE_DIR $NODE_PORT 5051 http://localhost:$PRIMARY_PORT/
 sh ./scripts/find-processIds.sh
