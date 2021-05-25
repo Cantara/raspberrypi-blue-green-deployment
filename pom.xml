@@ -6,20 +6,7 @@
     <name>blueGreenService</name>
     <url>https://wiki.cantara.no/</url>
 
-    <developers>
-        <developer>
-            <id>totto</id>
-            <name>Thor Henning Hetland</name>
-            <email>totto@totto.org</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <organization>Cantara</organization>
-            <organizationUrl>
-                https://wiki.cantara.no/display/architecture/Typical+micro+service+technology+stack+(java)/
-            </organizationUrl>
-        </developer>
-    </developers>
+   
 
 
     <parent>
@@ -41,7 +28,7 @@
         <service.name>raspberrypi-blue-green-deployment</service.name>
         <jackson.version>2.12.1</jackson.version>
         <jersey.version>2.31</jersey.version>
-        <jetty.version>9.4.37.v20210219</jetty.version>
+        <jetty.version>9.4.41.v20210516</jetty.version>
         <spring.version>5.2.9.RELEASE</spring.version>
         <slf4j.version>1.7.30</slf4j.version>
         <hystrix.version>1.5.18</hystrix.version>
