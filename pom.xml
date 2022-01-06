@@ -28,7 +28,7 @@
         <service.name>raspberrypi-blue-green-deployment</service.name>
         <jackson.version>2.12.6</jackson.version>
         <jersey.version>2.31</jersey.version>
-        <jetty.version>9.4.41.v20210516</jetty.version>
+        <jetty.version>9.4.44.v20210927</jetty.version>
         <spring.version>5.2.9.RELEASE</spring.version>
         <slf4j.version>1.7.30</slf4j.version>
         <hystrix.version>1.5.18</hystrix.version>
