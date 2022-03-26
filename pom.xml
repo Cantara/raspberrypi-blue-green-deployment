@@ -26,7 +26,7 @@
     <properties>
         <jdk.version>11</jdk.version>
         <service.name>raspberrypi-blue-green-deployment</service.name>
-        <jackson.version>2.13.2</jackson.version>
+        <jackson.version>2.13.2.1</jackson.version>
         <jersey.version>2.35</jersey.version>
         <jetty.version>9.4.44.v20210927</jetty.version>
         <spring.version>5.3.16</spring.version>
